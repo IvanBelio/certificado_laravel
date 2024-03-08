@@ -22,6 +22,7 @@ Route::view("saludo", "saludo");
 Route::view("about", "about");
 
 
+
 Route::get('/', function () {
     return view('main');
 })->name("index");

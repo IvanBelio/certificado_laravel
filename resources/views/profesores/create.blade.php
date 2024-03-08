@@ -21,6 +21,13 @@
                     {{$error}}
                 </div>
             @endforeach
+            <input type="text" name="dni" placeholder="dni" class="input input-bordered input-info w-full max-w-xs text-xl" />
+            @foreach($errors->get('dni') as $error)
+                <div class="text-sm text-red-600">
+                    {{$error}}
+                </div>
+            @endforeach
+            
 
             <select name="departamento" id="">
                 <option disabled selected >Selecciona dapartamento</option>

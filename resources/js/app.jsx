@@ -1,10 +1,19 @@
-import React from 'react';
-import './bootstrap.js';
-import {createRoot} from'react-dom/client';
-import Saludo from './Saludo.jsx';
+import './bootstrap';
+// import 'Code.jsx';
 
-const main_element = document.getElementById("root")
+import React from "react";
+import {createRoot} from "react-dom/client";
 
-const root = createRoot(main_element)
+import Saludo from "./Pages/Saludo.jsx";
+import Numero from "./Pages/Numero.jsx";
 
-root.render(<Saludo />)
+const react_numero = document.getElementById("react-numero");
+const react_saludo = document.getElementById("react-saludo");
+
+if (react_numero){
+    const numero = react_numero.getAttribute("numero");
+    createRoot(react_numero).render(<Numero numero={numero}/>);
+}
+
+if (react_saludo)
+    createRoot(react_saludo).render(<Saludo />);

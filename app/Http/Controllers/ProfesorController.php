@@ -35,7 +35,7 @@ class ProfesorController extends Controller
         $valores = $request->input();
         $profesor = new Profesor($valores);
         $profesor->save();
-        $profesores = Profesor::all();
+        $profesores = Profesor::paginate(5);
         session()->flash("status","Se ha creado el profesor $profesor->nombre");
         return view ("profesores.listado",["profesores"=>$profesores]);
 
