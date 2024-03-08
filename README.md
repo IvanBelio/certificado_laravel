@@ -1,66 +1,216 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Creando un CRUD para profesores
+## Creamos el ecosistema
+```bash
+php artisan make:model Profesor --all
+```
+**Esto crea los siguientes elementos**
+* Migración (Crear las tablas)
+* Factorias (Generar los datos que vamos a crear)
+* Seeder (Invocar a la factoría de un modelo e insertar los valores en la tabla)
+* Controlador (Los métodos que voy a ejecutar ante solicitudes)
+* Modelo (Clase para interactuar con una tabla concreata de la base de datos y hacer acciones típicas como insertar, borrar, consultar, y actualizar)
+* Request (Autoriza y valida los datos del formulario)
+* Policy (Políticas que definiran accesos)
+* Rutas (Hay que crearlas y dirán que recursos ofrece mi aplicación)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Ajustar los valores por defecto:
+1. Vamos a la migración y cambimos de profesors a profesores
+2. Vamos a models y en el archivo Profesor.php especificamos:
+```php
+user HasFactory;
+protected $table="profesores"
+```
 
-## About Laravel
+Tablas:
+* nombre
+* apellido
+* email
+* departamento
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Factoria de profesores:
+```php
+$departamento = ["Informáica","Comercio","Imagen"];
+return[
+'nombre'=>fake()->nombre(),
+'apellido'=>fake()->lastName(),
+'email'=>fake()->email(),
+'departamento'=>fake()->randomElement($departamento),
+];
+```
+## Cramos las rutas
+Vamos al fichero de rutas y agregamos para poder tener el get, delete...:
+```php
+Route::resource("profesores", ProfesorController::class);
+```
+Y arriba añadimos la ruta:
+```php
+use \App\Http\Controllers\ProfesorController;
+```
+En el archivo de la carpete migrations, añadimos lso parametros que queremos que tenga nuetra tabla, los cuales hmos especificado previamente en el archivo "PrefosrFactory.php"
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+En el archivo "ProfesorSeeder.php" tenemos que especificar cuantas columnas queremos que nos genere:
+```php
+public function run(): void
+{
+    Profesor::factory()->count(50)->create();
+}
+```
+Y decirle en el DatabaseSeeder.php que coja la función que hemos creado:
+```php
+public function run(): void
+{
+    $this->call([
+        AlumnoSeeder::class
+        ProfesorSeeder::class
+    ]);
+}
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```php
+Schema::create('profesores', function (Blueprint $table) {
+    $table->id();
+    $table->string('nombre');
+    $table->string('apellidos');
+    $table->string('email');
+    $table->string('departamento');
+    $table->timestamps();
+});
+```
 
-## Learning Laravel
+En el archivo "StoreProfesorRequest.php" tendremos que añadir:
+```php
+public function authorize(): bool
+{
+    return true;
+}
+```
+Y esto para hacer que el nombre... tengan unos requerimientos
+```php
+public function rules(): array
+{
+return [
+        "nombre"=>"required|min:3",
+        "apellidos"=>"required|min:5",
+        "departamento"=>"required",
+        "email"=>"email|required|unique:profesores",
+    ];
+}
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Creamos la tabla y Poblamos la tabla
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Idiomas tabla alumnos:
+```bash
+php artisan make:model Idioma --all
+```
+En el archivo de las migraciones añadimos los idiomas:
+```php
+Schema::create('idiomas', function (Blueprint $table) {
+    $table->id();
+    $table->string("idiomas");
+    $table->foreignId("alumno_id")->constrained()->cascadeOnDelete();
+    $table->timestamps();
+});
+```
+```bash
+php artisan migrate
+```
+En el archivo seeder del alumno deberemos de añadir el models "Idioma" y los idiomas que queremos poner en nuestra base de datos:
+```php
+use App\Models\Idioma;
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+class AlumnoSeeder extends Seeder{
 
-## Laravel Sponsors
+    private function get_idiomas(): array{
+    $idiomas = ["Francés", "Inglés", "Alemán", "Ruso", "Rumano", "Portugués",
+        "Catalán", "Gallego", "Fabla", "Vasco", "Italiano", "Chino"];
+    $idiomas_hablados = [];
+    $numero_idiomas = rand(0, 4);
+    if ($numero_idiomas == 0)
+        return [];
+    $posiciones_idiomas = array_rand($idiomas, $numero_idiomas);
+    dump ($posiciones_idiomas);
+    if (!is_array($posiciones_idiomas))
+        $idiomas_hablados[] = $idiomas[$posiciones_idiomas];
+    else
+        foreach ($posiciones_idiomas as $pos)
+            $idiomas_hablados[] = $idiomas[$pos];
+    return $idiomas_hablados;
+}
+    public function run(): void{
+        Alumno::factory()->count(50)->create()->each(function ($alumno) {
+            $idiomas_hablados = $this->get_idiomas();
+            foreach ($idiomas_hablados as $idioma_hablado) {
+                $idioma = new Idioma();
+                $idioma->idioma = $idioma_hablado;
+                $idioma->alumno_id = $alumno->id;
+                $idioma->save();
+            }
+        });
+    }
+}
+```
+Vamos al controlador de alumno:
+```php
+public function index()
+{
+    $alumnos = Alumno::paginate(10);
+    return view("alumnos.listado", ["alumnos" => $alumnos]);
+}
+```
+Lo utilizamos para que solo aparezcan 5 alumnos
+Vamos a la página de listado.blade de alumnos:
+```php
+{{$alumnos->links()}}
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+php artisan vendor:publish --tag=laravel-pagination
+```
+Vistas para la paginación
+```php
+{{$alumnos->links('vendor.pagination.nuestraPágina')}}
+```
 
-### Premium Partners
+Al borrar un alumno debemos poner en el controlador:
+```php
+public function destroy(Alumno $alumno)
+{
+    $alumno->delete();
+    $alumnos = Alumno::paginate(5);
+    return back();
+}
+```
+# Otros:
+## Archivo Docker-compose.yaml:
+```yaml
+version: "3.8"
+services:
+  mysql:
+    image: mysql
+    volumes:
+      - ./datos:/var/lib/mysql
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD_ROOT}
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - ${DB_PORT_PHPMYADMIN}:80
+    environment:
+      - PMA_HOST=mysql
+      - PMA_ARBITRARY=1
+    depends_on:
+      - mysql
+```
+En este archivo indicamos lso servicios que vamos a utilizar (mysql y phpmyadmin en este caso), con su imagen propia, el puerto que vamos a utilizar y donde lo vamos a alamacenar.
+> [!NOTE]
+> Lo que ponemeos en "enviroment" debemos especificarlo previamente en el archvio .env
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Instalamos el pluging
+2. Un componenete de reac para renderizar los componenetes en mi habitaciń
+3. Un plugin de vite para orquestar lo de react junto a lo del cliente

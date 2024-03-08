@@ -13,7 +13,7 @@ class AlumnoController extends Controller
      */
     public function index()
     {
-        $alumnos = Alumno::all();
+        $alumnos = Alumno::paginate(5);
         return view("alumnos.listado", ["alumnos" => $alumnos]);
     }
 
@@ -22,7 +22,7 @@ class AlumnoController extends Controller
      */
     public function create()
     {
-        //
+        return view("alumnos.create");
     }
 
     /**
@@ -30,7 +30,12 @@ class AlumnoController extends Controller
      */
     public function store(StoreAlumnoRequest $request)
     {
-        //
+        $valores = $request->input();
+        $alumno = new Alumno($valores);
+        $alumno->save();
+        $alumnos = Alumno::all();
+        return view("alumnos.listado", ["alumnos" => $alumnos]);
+
     }
 
     /**
@@ -38,7 +43,7 @@ class AlumnoController extends Controller
      */
     public function show(Alumno $alumno)
     {
-        //
+        return view("alumnos.show", ["alumno" => $alumno]);
     }
 
     /**
@@ -46,7 +51,7 @@ class AlumnoController extends Controller
      */
     public function edit(Alumno $alumno)
     {
-        //
+        return view("alumnos.editar", ["alumno" => $alumno]);
     }
 
     /**
@@ -54,7 +59,14 @@ class AlumnoController extends Controller
      */
     public function update(UpdateAlumnoRequest $request, Alumno $alumno)
     {
-        //
+        /* Recojo todos lso inputs del formulario
+            $request que es la solicitud trae con ella un formulario con datos
+            Es como $_POST['nombre] de antes */
+        $valores = $request->input(); // Leo los valores del formulario
+        $alumno->update($valores);
+        $alumnos = Alumno::paginate(5); // Recupero los dattos a al vista para que los muetre en una taba
+        // Entrego esos dtso a la vista paa que los muestre en una tabla
+        return view("alumnos.listado", ["alumnos" => $alumnos]);
     }
 
     /**
@@ -62,6 +74,8 @@ class AlumnoController extends Controller
      */
     public function destroy(Alumno $alumno)
     {
-        //
+        $alumno->delete();
+        $alumnos = Alumno::paginate(5);
+        return back();
     }
 }

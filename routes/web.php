@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AlumnoController;
+use \App\Http\Controllers\ProfesorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,14 +16,15 @@ use \App\Http\Controllers\AlumnoController;
 |
 */
 Route::view("main", "main");
+Route::view("saludo", "saludo");
 
 
 Route::view("about", "about");
 
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    return view('main');
+})->name("index");
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -35,5 +37,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource("alumnos", AlumnoController::class);
+
+Route::resource("profesores", ProfesorController::class);
 
 require __DIR__.'/auth.php';
