@@ -207,10 +207,6 @@ services:
     depends_on:
       - mysql
 ```
-En este archivo indicamos lso servicios que vamos a utilizar (mysql y phpmyadmin en este caso), con su imagen propia, el puerto que vamos a utilizar y donde lo vamos a alamacenar.
+En este archivo indicamos los servicios que vamos a utilizar (mysql y phpmyadmin en este caso), con su imagen propia, el puerto que vamos a utilizar y donde lo vamos a alamacenar.
 > [!NOTE]
 > Lo que ponemeos en "enviroment" debemos especificarlo previamente en el archvio .env
-
-1. Instalamos el pluging
-2. Un componenete de reac para renderizar los componenetes en mi habitaciń
-3. Un plugin de vite para orquestar lo de react junto a lo del cliente

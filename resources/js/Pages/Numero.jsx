@@ -1,5 +1,5 @@
-export default function Numero(){
-    const numero = props.numero;
+export default function Numero({numero}){
+    //const numero = props.numero;
 
     return(
         <>

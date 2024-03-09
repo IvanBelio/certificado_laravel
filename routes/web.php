@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AlumnoController;
 use \App\Http\Controllers\ProfesorController;
+use \App\Http\Controllers\MainController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,16 +16,15 @@ use \App\Http\Controllers\ProfesorController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::view("main", "main");
+Route::get("react",MainController::class);
 Route::view("saludo", "saludo");
-
 
 Route::view("about", "about");
 
 
 
 Route::get('/', function () {
-    return view('main');
+    return view('/main');
 })->name("index");
 
 Route::get('/dashboard', function () {
