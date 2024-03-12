@@ -2,7 +2,7 @@
     <a href="about" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded">About</a>
     <a href="" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded" disabled>Contacta</a>
     <a href="" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded" disabled>Proyectos</a>
-    <a href="main" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded">Principal</a>
+    <a href="/" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded">Principal</a>
     <a href="/alumnos" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded">Alumnos</a>
     <a href="{{route('profesores.index')}}" class="bg-transparent text-black hover:bg-black hover:text-white hover:ring-4 hover:ring-blue transition duration-300 ease-in-out py-2 px-4 border border-black rounded">Profesores</a>
 </nav>
